@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X_UA_Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Simple Messaging App</title>
+	</head>
+	<body>
+		<ul id="messages"></ul>
+		<input id="message_input" autocomplete="off">
+		<button onclick="sendMessage()">Send</button>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.1/socket.io.js"></script>
+		<script>
+			var socket = io.connect('http://' + document.domain + ":" + location.port);
+
+			socket.on('new_message', function(data) {
+				var ul = document.getElementById('messages');
+				var li = document.createElement('li');
+				li.appendChild(document.createTextNode(data.message));
+				ul.appendChild(li);
+			});
+
+			function sendMessage() {
+				var messageInput = document.getElementById('message_input');
+				var message = messageInput.value.trim();
+
+				if (message !== '') {
+					socket.emit('send_message', {'message': message});
+					messageInput.value = '';
+				}
+			}
+		</script>
+	</body>
+</html>
